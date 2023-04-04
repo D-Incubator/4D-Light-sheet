@@ -17,7 +17,7 @@
 2. Download the [example data](https://drive.google.com/file/d/1b6wrtxzxBQMfubPJYMH8rC0Q6WtakY-p/view?usp=share_link) on google drive and put the data in ```4D-Reconstruction/example```.
 3. Run the ```test_Parallel.m``` file and check the output in the data folder.
 ### Run the python code for converting .tif labels to .obj models
-0. Install Jupyter Notebook using [Anaconda](https://www.anaconda.com/) and [3D Slicer](https://www.slicer.org/) on the computer.
+0. Install Jupyter Notebook (using [Anaconda](https://www.anaconda.com/)) and [3D Slicer](https://www.slicer.org/) on the computer.
 1. Install ```SlicerJupyter``` extension in 3D slicer following this [instruction](https://github.com/Slicer/SlicerJupyter).
 2. Download the [example data](https://drive.google.com/file/d/1lTHBetnFLjHKUVjT5oqtXGFTF00-oI9r/view?usp=sharing) and the [code](https://github.com/d-incubator1/4D-Light-sheet/blob/main/CellLabelsToObj.ipynb).
 3. Open the code in Jupyter Notebook. Change the kernel to ```Slicer 5.2``` (or other versions). 
