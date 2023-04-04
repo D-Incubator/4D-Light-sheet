@@ -3,7 +3,7 @@
 
 ## This package contains:
 1. The MATLAB code for reconstructing 4D images using parallel computation.
-2. The python code for converting .tif images with mutiple cell labels into .obj files for VR analysis in Unity.
+2. The Python code for converting .tif images with mutiple cell labels into .obj files for VR analysis in Unity.
 
 ## Requirements
 - MATLAB
