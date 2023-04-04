@@ -20,6 +20,6 @@
 0. Install Jupyter Notebook (using [Anaconda](https://www.anaconda.com/)) and [3D Slicer](https://www.slicer.org/) on the computer.
 1. Install ```SlicerJupyter``` extension in 3D slicer following this [instruction](https://github.com/Slicer/SlicerJupyter).
 2. Download the [example data](https://drive.google.com/file/d/1lTHBetnFLjHKUVjT5oqtXGFTF00-oI9r/view?usp=sharing) and the [code](https://github.com/d-incubator1/4D-Light-sheet/blob/main/CellLabelsToObj.ipynb).
-3. Open the code in Jupyter Notebook. Change the kernel to ```Slicer 5.2``` (or other versions). 
+3. Open the code in Jupyter Notebook. Change the kernel to ```Slicer 5.2``` (I used this but other versions may work as well). 
 4. Set the ```dataFolder``` and ```saveFolder``` in the code for sample data and output data.
 5. Run the code and check the output.
