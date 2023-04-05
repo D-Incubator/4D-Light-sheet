@@ -19,7 +19,7 @@
 ### Run the Python code for converting .tif labels to .obj models
 0. Install Jupyter Notebook (using [Anaconda](https://www.anaconda.com/)) and [3D Slicer](https://www.slicer.org/) on the computer.
 1. Install ```SlicerJupyter``` extension in 3D slicer following option 2 of this [instruction](https://github.com/Slicer/SlicerJupyter).
-2. Download the [example data](https://drive.google.com/file/d/1lTHBetnFLjHKUVjT5oqtXGFTF00-oI9r/view?usp=sharing) and the [code](https://github.com/d-incubator1/4D-Light-sheet/blob/main/CellLabelsToObj.ipynb).
+2. Download the [code](https://github.com/d-incubator1/4D-Light-sheet/blob/main/CellLabelsToObj.ipynb) and the [example data](https://drive.google.com/file/d/1lTHBetnFLjHKUVjT5oqtXGFTF00-oI9r/view?usp=sharing).
 3. Open the code in Jupyter Notebook. Change the kernel to ```Slicer 5.2``` (I used this but other versions may work as well). 
 4. Set the ```dataFolder``` and ```saveFolder``` in the code for example data and output data.
 5. Run the code and check the output.
