@@ -23,6 +23,14 @@ systolicPoint_4st = 280;
 %-------------------------------------------------------------------------%
 subDir = ['output\' num2str(numOfSlice) 'slices' num2str(numOfImage) 'images_' dataName]; disp(subDir);
 outputDir = [baseDir '\' subDir]; %disp(numOfSlice);
+
+% get height and width of images
+imageList = dir([baseDir '\' int2str(1) '\*.tif']);
+tempIMG = imread([baseDir '\' int2str(1) '\' imageList(1).name]); % read in one image
+[imgHeight, imgWidth] = size(tempIMG);
+clear tempIMG
+clear imageList
+
 %open parallel pool
 parfor i=1
 end
@@ -42,7 +50,7 @@ t_p_candidate = zeros(1,numOfSlice);
 parfor i = 1:numOfSlice
     t_p_candidate(i) = getPeriod_wrapper([baseDir '\' int2str(i)], h_T, periodTh1, periodTh2,numOfImage); %get the estimated heartbeat period in each 2D image slice
     t_period(i) = toc(t0)-t_start1;
-    %disp(i);
+    disp(i);
 end
 t_p = sum(t_p_candidate)/length(t_p_candidate); % get the average estimated heartbeat period of all slices
 %disp(t_p); 
@@ -55,8 +63,18 @@ rserial = 1; %timer
 maxSliceConsidered=2;
 numOfSliceMinus1 = numOfSlice-1;
 Q = -500.*ones(numOfSlice, numOfSlice); % creat a 54*54 matrix with all -500 value
+startIndex = floor(t_p/h_T)+1;
 
 parfor i = 1:numOfSlice-1
+    
+    % first get images1, instead of getting it every time you get images2
+    imageList = dir([baseDir '\' int2str(i) '\*.tif']); % obtain image list    
+    images1= int32.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
+        
+    for k = 1:numOfImage 
+        images1(:,:,k) = imread([baseDir '\' int2str(i) '\' imageList(k).name]); % read all images in to the matrix
+    end
+
     for j = 1:numOfSliceMinus1
         if( j < i || j > i+2)
             continue;
@@ -64,12 +82,39 @@ parfor i = 1:numOfSlice-1
         if i == j % diagonals are 0
             Q(i,j) = 0;            
         elseif j > i % anti-symmetric matrix
-            Q(i,j) = getRelativeShift_wrapper( baseDir, i, j, t_p, h_T, numOfImage );       
-%             t_relativeshift(rserial) = toc(t0)-t_start2; rserial = rserial+1;            
+            %Q(i,j) = getRelativeShift_wrapper( baseDir, i, j, t_p, h_T, numOfImage );   
+            imageList = dir([baseDir '\' int2str(j) '\*.tif']); % obtain image list    
+            images2= int32.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
+            
+            for k = 1:numOfImage 
+                images2(:,:,k) = imread([baseDir '\' int2str(j) '\' imageList(k).name]); % read all images in to the matrix
+            end
+            
+            cost = inf;
+            for s = -floor((startIndex-1)/2):floor(startIndex/2)   
+                energy = 0;
+                for ind = startIndex:3*startIndex-1
+                    if s+ind <= numOfImage
+                        buffer = images1(:,:,ind) - images2(:,:,s+ind); %subtraction
+                        buffer = buffer.^2;                       
+                        energy = energy + sum(sum(buffer));
+                        % if energy is already too high, no need to keep
+                        % calculating
+                        if energy >= cost
+                            break
+                        end
+                    end
+                end
+                if energy < cost           
+                    Q(i,j) = s;
+                    cost = energy;
+                end
+            end
+
         end        
     end
     fprintf('%d is complete\n',i);
-    %disp(toc(t0)-t_start2);
+    disp(toc(t0)-t_start2);
 end
 
 for i = 1:numOfSlice-1
@@ -120,6 +165,8 @@ disp("Got Abosolute Shift at num seconds:");disp(t_absoluteshift_all);
 %% Final aligning and resample
 t_start4 = toc(t0);
 numOfImage = round(numOfPeriod * t_p/h_T);
+% regulize... can potentially be made faster by unrolling it and using a
+% parallel loop
 regulizeData_wrapper(baseDir, outputDir, t_p, t, h_T, numOfSlice, numOfPeriod, numOfImage); %resample data and save bySlice output
 t_finalize = toc(t0)-t_start4; %timer
 disp("Got Resampled at num seconds:");disp(t_finalize);
