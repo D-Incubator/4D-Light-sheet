@@ -175,11 +175,12 @@ numOfImage = round(numOfPeriod * t_p/h_T);
 
 % create the necessary directories
 makeOutputDirs(outputDir);    
+byStateDir = [outputDir '\byState'];
 for i = 1:numOfSlice
     mkdir([outputDir '\bySlice\' int2str(i)]);
 end
 
-% write output
+% resample and write output by slice
 parfor i = 1:numOfSlice
     imageList = dir([baseDir '\' int2str(i) '\*.tif']);
     images= zeros( imgHeight , imgWidth , floor(numOfPeriod*t_p/h_T)+2 , 'uint16' );       
@@ -196,10 +197,24 @@ parfor i = 1:numOfSlice
     end         
 end
 
+% rewrite output by state
+parfor i = 1:numOfImage      
+    % combine image to one tiff and save
+    combine_name = [byStateDir '\' 'state_' num2str(i,'%04d') '.tif'];                     
+     % save reconstructed 3D images
+    for j = 1:numOfSlice
+        imagedata1 = imread([outputDir '\bySlice\' int2str(j) '\' int2str(i) '.tif']);
+        if (j == 1)
+            imwrite(imagedata1,combine_name);            
+        else   
+            imwrite(imagedata1,combine_name, 'WriteMode', 'append');
+        end
+    end          
+end
+rmdir(append(outputDir,'\bySlice'), 's') %*delete bySlice output
+
 t_finalize = toc(t0)-t_start4; %timer
 disp("Resampled using num seconds:");disp(t_finalize);
-output_wrapper(outputDir, numOfSlice, numOfImage); %save byState output as 3D tiff files
-rmdir(append(outputDir,'\bySlice'), 's') %*delete bySlice output
 
 %% Record used time
 t_align_all = t_relativeshift_all + t_absoluteshift_all;
