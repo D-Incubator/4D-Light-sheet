@@ -6,8 +6,9 @@ clear;
 % author upon request.
 
 % set data folder 
-baseDir = 'example\cmlc2-nucGFP-7dpf';
-dirNames = split(baseDir,"\"); dataName = char(dirNames(end));
+baseDir = 'C:\Users\Austin\Desktop\DLoad\4D-example-data\4D-example-data\cmlc2-nucGFP-7dpf';
+dirNames = split(baseDir,"\"); 
+dataName = char(dirNames(end));
 % set total number of 2D image slices
 numOfSlice = 30; 
 % set number of images in each 2D image slice
@@ -21,7 +22,7 @@ systolicPoint_1st = 40;
 systolicPoint_4st = 280; 
 %-------------------------------------------------------------------------%
 subDir = ['output\' num2str(numOfSlice) 'slices' num2str(numOfImage) 'images_' dataName]; disp(subDir);
-outputDir = [baseDir '\' subDir]; disp(numOfSlice);
+outputDir = [baseDir '\' subDir]; %disp(numOfSlice);
 %open parallel pool
 parfor i=1
 end
@@ -34,16 +35,19 @@ t_start1 = toc(t0);
 periodTh1 = (systolicPoint_4st-systolicPoint_1st)/3*h_T*0.85 - 30;
 periodTh2 = (systolicPoint_4st-systolicPoint_1st)/3*h_T*1.15 + 30;
 t_p_candidate = zeros(1,numOfSlice);
+
+
+
 % *can't use global variables in parfor loop
 parfor i = 1:numOfSlice
     t_p_candidate(i) = getPeriod_wrapper([baseDir '\' int2str(i)], h_T, periodTh1, periodTh2,numOfImage); %get the estimated heartbeat period in each 2D image slice
     t_period(i) = toc(t0)-t_start1;
-    disp(i);
+    %disp(i);
 end
 t_p = sum(t_p_candidate)/length(t_p_candidate); % get the average estimated heartbeat period of all slices
-disp(t_p); 
+%disp(t_p); 
 t_period_all = t_period(numOfSlice); %timer
-disp("Got Period");disp(t_period_all);
+disp("Got Period at num seconds:");disp(t_period_all);
 
 %% Get relative shift (with parallel computation)
 t_start2 = toc(t0);
@@ -65,7 +69,7 @@ parfor i = 1:numOfSlice-1
         end        
     end
     fprintf('%d is complete\n',i);
-    disp(toc(t0)-t_start2);
+    %disp(toc(t0)-t_start2);
 end
 
 for i = 1:numOfSlice-1
@@ -77,7 +81,7 @@ for i = 1:numOfSlice-1
 end
 t_relativeshift(rserial) = toc(t0)-t_start2;
 t_relativeshift_all = t_relativeshift(rserial); %timer
-disp("Got Relative Shift");disp(t_relativeshift_all);
+disp("Got Relative Shift at num seconds:");disp(t_relativeshift_all);
 
 %% Get absolute shift
 t_start3 = toc(t0);
@@ -111,14 +115,14 @@ t(1) = 0;
 t = mod(t,t_p/h_T);
 t = floor(t);
 t_absoluteshift_all = toc(t0)-t_start3; %timer
-disp("Got Abosolute Shift");disp(t_absoluteshift_all);
+disp("Got Abosolute Shift at num seconds:");disp(t_absoluteshift_all);
 
 %% Final aligning and resample
 t_start4 = toc(t0);
 numOfImage = round(numOfPeriod * t_p/h_T);
 regulizeData_wrapper(baseDir, outputDir, t_p, t, h_T, numOfSlice, numOfPeriod, numOfImage); %resample data and save bySlice output
 t_finalize = toc(t0)-t_start4; %timer
-disp("Got Resampled");disp(t_finalize);
+disp("Got Resampled at num seconds:");disp(t_finalize);
 output_wrapper(outputDir, numOfSlice, numOfImage); %save byStaet output as 3D tiff files
 rmdir(append(outputDir,'\bySlice'), 's') %*delete bySlice output
 

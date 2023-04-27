@@ -1,4 +1,4 @@
-function [T_p, images_resampled] = getPeriod_wrapper( path , h_T, th1, th2, numOfImage)
+function [T_p] = getPeriod_wrapper( path , h_T, th1, th2, numOfImage)
 
 %%  read images
     imageList = dir([path '\*.tif']); % obtain image list    
@@ -11,11 +11,13 @@ function [T_p, images_resampled] = getPeriod_wrapper( path , h_T, th1, th2, numO
     for i = 1:numOfImage
         
         images(:,:,i) = imread([path '\' imageList(i).name]); % read all images in to the matrix
-        images = gpuArray(images);
+        %images = gpuArray(images);
     end
 
 %% get period
     T_p = getPeriod(th1,th2,images,h_T); % get period from input data
+
+    clear images
     
     
 
