@@ -63,7 +63,7 @@ end
 t_p = sum(t_p_candidate)/length(t_p_candidate); % get the average estimated heartbeat period of all slices
 %disp(t_p); 
 t_period_all = t_period(numOfSlice); %timer
-disp("Got Period at num seconds:");disp(t_period_all);
+disp("Got Period using num seconds:");disp(t_period_all);
 
 %% Get relative shift (with parallel computation)
 t_start2 = toc(t0);
@@ -133,7 +133,7 @@ for i = 1:numOfSlice-1
 end
 t_relativeshift(rserial) = toc(t0)-t_start2;
 t_relativeshift_all = t_relativeshift(rserial); %timer
-disp("Got Relative Shift at num seconds:");disp(t_relativeshift_all);
+disp("Got Relative Shift using num seconds:");disp(t_relativeshift_all);
 
 %% Get absolute shift
 t_start3 = toc(t0);
@@ -167,7 +167,7 @@ t(1) = 0;
 t = mod(t,t_p/h_T);
 t = floor(t);
 t_absoluteshift_all = toc(t0)-t_start3; %timer
-disp("Got Abosolute Shift at num seconds:");disp(t_absoluteshift_all);
+disp("Got Absolute Shift using num seconds:");disp(t_absoluteshift_all);
 
 %% Final aligning and resample
 t_start4 = toc(t0);
@@ -176,7 +176,7 @@ numOfImage = round(numOfPeriod * t_p/h_T);
 % parallel loop
 regulizeData_wrapper(baseDir, outputDir, t_p, t, h_T, numOfSlice, numOfPeriod, numOfImage); %resample data and save bySlice output
 t_finalize = toc(t0)-t_start4; %timer
-disp("Got Resampled at num seconds:");disp(t_finalize);
+disp("Resampled using num seconds:");disp(t_finalize);
 output_wrapper(outputDir, numOfSlice, numOfImage); %save byStaet output as 3D tiff files
 rmdir(append(outputDir,'\bySlice'), 's') %*delete bySlice output
 
