@@ -1,4 +1,5 @@
 function output_wrapper(outputDir, numOfSlice, numOfImage)  
+    byStateDir = [outputDir '\byState'];
     for i = 1:numOfImage      
         % combine image to one tiff and save
         combine_name = [byStateDir '\' 'state_' num2str(i,'%04d') '.tif'];                     

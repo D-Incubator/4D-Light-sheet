@@ -182,15 +182,15 @@ end
 % write output
 parfor i = 1:numOfSlice
     imageList = dir([baseDir '\' int2str(i) '\*.tif']);
-    images= uint16.empty( imgHeight , imgWidth , 0 );       
+    images= zeros( imgHeight , imgWidth , floor(numOfPeriod*t_p/h_T)+2 , 'uint16' );       
     count = 1;
     % align all slice
-    for j = t(i)+1 : t(i)+1+floor(numOfPeriod*T_p/h_T)
+    for j = t(i)+1 : t(i)+1+floor(numOfPeriod*t_p/h_T)
         images(:,:,count) = imread([baseDir '\' int2str(i) '\' imageList(j).name]);            
         count = count + 1;
     end       
     % save resample data(temporarily)         
-    images_resampled = getResample(images, T_p , numOfPeriod , numOfImage, h_T );
+    images_resampled = getResample(images, t_p , numOfPeriod , numOfImage, h_T );
     for j = 1:numOfImage
         imwrite(uint16(images_resampled(:,:,j)),[outputDir '\bySlice\' int2str(i) '\' int2str(j) '.tif']);
     end         
