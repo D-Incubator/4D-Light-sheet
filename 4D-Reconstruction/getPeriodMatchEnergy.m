@@ -13,30 +13,17 @@
 % Output
 % Signal Dispersion Energy
 
-function [energy] = getPeriodMatchEnergy(T_p,images,h_T)
+function [energy] = getPeriodMatchEnergy(T_p,images,h_T,numOfImages)
 
-%     global images;
-%     global h_T;
-    
-    [height, width, numOfImages] = size(images);
-    
     timeInstances = 0:numOfImages-1; % initialize an array of all time indexes
     timeInstances = timeInstances .* h_T; % convert the array to times
-%     T_p
     timeInstances = mod(timeInstances, T_p); % phase lock w.r. to different candidate period
-%     timeInstances
  
     energy = 0;
-    timeDiff = 0;
-    buffer = zeros(height,width); % buffer is used to store the intance difference
-                                  % of two frames on two adjacent time
-                                  % instance
     
     [timeInstances_sort, index] = sort(timeInstances , 'ascend'); % sort time instances into ascending order
-%     index
-    
+
     for i = 1:numOfImages-1
-%         buffer = corr2(images(:,:,index(i+1)),images(:,:,index(i)));%cross correlation
 
         buffer = images(:,:,index(i+1)) - images(:,:,index(i)); % subtraction
         buffer = buffer.^2;

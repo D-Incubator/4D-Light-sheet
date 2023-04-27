@@ -44,11 +44,19 @@ periodTh1 = (systolicPoint_4st-systolicPoint_1st)/3*h_T*0.85 - 30;
 periodTh2 = (systolicPoint_4st-systolicPoint_1st)/3*h_T*1.15 + 30;
 t_p_candidate = zeros(1,numOfSlice);
 
-
-
 % *can't use global variables in parfor loop
 parfor i = 1:numOfSlice
-    t_p_candidate(i) = getPeriod_wrapper([baseDir '\' int2str(i)], h_T, periodTh1, periodTh2,numOfImage); %get the estimated heartbeat period in each 2D image slice
+    %t_p_candidate(i) = getPeriod_wrapper([baseDir '\' int2str(i)], h_T, periodTh1, periodTh2,numOfImage); %get the estimated heartbeat period in each 2D image slice
+    imageList = dir([baseDir '\' int2str(i) '\*.tif']); % obtain image list    
+
+    images= int32.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
+
+    for j = 1:numOfImage
+        images(:,:,j) = imread([baseDir '\' int2str(i) '\' imageList(j).name]); % read all images in to the matrix
+    end
+    
+    t_p_candidate(i) = getPeriod(periodTh1,periodTh2,images,h_T,numOfImage); % get period from input data
+
     t_period(i) = toc(t0)-t_start1;
     disp(i);
 end
@@ -82,7 +90,6 @@ parfor i = 1:numOfSlice-1
         if i == j % diagonals are 0
             Q(i,j) = 0;            
         elseif j > i % anti-symmetric matrix
-            %Q(i,j) = getRelativeShift_wrapper( baseDir, i, j, t_p, h_T, numOfImage );   
             imageList = dir([baseDir '\' int2str(j) '\*.tif']); % obtain image list    
             images2= int32.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
             

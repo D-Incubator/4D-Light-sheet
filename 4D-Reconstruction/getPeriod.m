@@ -17,10 +17,10 @@
 %   T_p: period
 
 
-function [T_p] = getPeriod(th1,th2,images,h_T)
+function [T_p] = getPeriod(th1,th2,images,h_T,numOfImages)
 
 %% optimization objective function
-    T_p = fminbnd(@(T_p)getPeriodMatchEnergy(T_p,images,h_T), th1 , th2 ); % matlab build in non linear optimization function
+    T_p = fminbnd(@(T_p)getPeriodMatchEnergy(T_p,images,h_T,numOfImages), th1 , th2 ); % matlab build in non linear optimization function
     
     
     
