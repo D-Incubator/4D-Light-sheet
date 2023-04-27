@@ -39,6 +39,8 @@ t_period = zeros(1,numOfSlice); % timer
 t_relativeshift = zeros(1,numOfSlice*2-2); % timer
 
 %% Get period (with parallel computation)
+disp('Getting period...')
+
 t_start1 = toc(t0);
 periodTh1 = (systolicPoint_4st-systolicPoint_1st)/3*h_T*0.85 - 30;
 periodTh2 = (systolicPoint_4st-systolicPoint_1st)/3*h_T*1.15 + 30;
@@ -46,8 +48,7 @@ t_p_candidate = zeros(1,numOfSlice);
 
 % *can't use global variables in parfor loop
 parfor i = 1:numOfSlice
-    %t_p_candidate(i) = getPeriod_wrapper([baseDir '\' int2str(i)], h_T, periodTh1, periodTh2,numOfImage); %get the estimated heartbeat period in each 2D image slice
-    imageList = dir([baseDir '\' int2str(i) '\*.tif']); % obtain image list    
+   imageList = dir([baseDir '\' int2str(i) '\*.tif']); % obtain image list    
 
     images= int32.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
 
@@ -58,14 +59,16 @@ parfor i = 1:numOfSlice
     t_p_candidate(i) = getPeriod(periodTh1,periodTh2,images,h_T,numOfImage); % get period from input data
 
     t_period(i) = toc(t0)-t_start1;
-    disp(i);
+    disp(['====> Iteration ' int2str(i) ' in period loop is complete...']);
 end
 t_p = sum(t_p_candidate)/length(t_p_candidate); % get the average estimated heartbeat period of all slices
 %disp(t_p); 
 t_period_all = t_period(numOfSlice); %timer
-disp("Got Period using num seconds:");disp(t_period_all);
+disp(['Getting period took ' num2str(t_period_all) ' seconds overall...']);
 
 %% Get relative shift (with parallel computation)
+disp('Getting relative shift...')
+
 t_start2 = toc(t0);
 rserial = 1; %timer
 maxSliceConsidered=2;
@@ -74,7 +77,6 @@ Q = -500.*ones(numOfSlice, numOfSlice); % creat a 54*54 matrix with all -500 val
 startIndex = floor(t_p/h_T)+1;
 
 parfor i = 1:numOfSlice-1
-    
     % first get images1, instead of getting it every time you get images2
     imageList = dir([baseDir '\' int2str(i) '\*.tif']); % obtain image list    
     images1= int32.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
@@ -120,8 +122,7 @@ parfor i = 1:numOfSlice-1
 
         end        
     end
-    fprintf('%d is complete\n',i);
-    disp(toc(t0)-t_start2);
+    disp(['====> Iteration ' int2str(i) ' in relative shift loop is complete...']);
 end
 
 for i = 1:numOfSlice-1
@@ -133,9 +134,11 @@ for i = 1:numOfSlice-1
 end
 t_relativeshift(rserial) = toc(t0)-t_start2;
 t_relativeshift_all = t_relativeshift(rserial); %timer
-disp("Got Relative Shift using num seconds:");disp(t_relativeshift_all);
+disp(['Getting relative shift took ' num2str(t_relativeshift_all) ' seconds overall...']);
 
 %% Get absolute shift
+disp('Getting absolute shift...')
+
 t_start3 = toc(t0);
 % maxSliceConsidered=2;
 maxTermInS = (numOfSlice)*(numOfSlice-1)/2 - (numOfSlice-maxSliceConsidered)*(numOfSlice-maxSliceConsidered-1)/2;
@@ -167,11 +170,10 @@ t(1) = 0;
 t = mod(t,t_p/h_T);
 t = floor(t);
 t_absoluteshift_all = toc(t0)-t_start3; %timer
-disp("Got Absolute Shift using num seconds:");disp(t_absoluteshift_all);
+disp(['Getting absolute shift took ' num2str(t_absoluteshift_all) ' seconds overall...']);
 
 %% Final aligning and resample
-t_start4 = toc(t0);
-numOfImage = round(numOfPeriod * t_p/h_T);
+disp('Resampling and writing output...')
 
 % create the necessary directories
 makeOutputDirs(outputDir);    
@@ -179,6 +181,9 @@ byStateDir = [outputDir '\byState'];
 for i = 1:numOfSlice
     mkdir([outputDir '\bySlice\' int2str(i)]);
 end
+
+t_start4 = toc(t0);
+numOfImage = round(numOfPeriod * t_p/h_T);
 
 % resample and write output by slice
 parfor i = 1:numOfSlice
@@ -214,7 +219,7 @@ end
 rmdir(append(outputDir,'\bySlice'), 's') %*delete bySlice output
 
 t_finalize = toc(t0)-t_start4; %timer
-disp("Resampled using num seconds:");disp(t_finalize);
+disp(['Resampling and writing took ' num2str(t_finalize) ' seconds overall...']);
 
 %% Record used time
 t_align_all = t_relativeshift_all + t_absoluteshift_all;
