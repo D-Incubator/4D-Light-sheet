@@ -50,7 +50,7 @@ t_p_candidate = zeros(1,numOfSlice);
 parfor i = 1:numOfSlice
     imageList = dir([baseDir '\' int2str(i) '\*.tif']); % obtain image list    
 
-    images= int32.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
+    images= uint16.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
 
     for j = 1:numOfImage
         images(:,:,j) = imread([baseDir '\' int2str(i) '\' imageList(j).name]); % read all images in to the matrix
@@ -80,7 +80,7 @@ startIndex = floor(t_p/h_T)+1;
 parfor i = 1:numOfSlice-1
     % first get images1, instead of getting it every time you get images2
     imageList = dir([baseDir '\' int2str(i) '\*.tif']); % obtain image list    
-    images1= int32.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
+    images1= uint16.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
         
     for k = 1:numOfImage 
         images1(:,:,k) = imread([baseDir '\' int2str(i) '\' imageList(k).name]); % read all images in to the matrix
@@ -94,7 +94,7 @@ parfor i = 1:numOfSlice-1
             Q(i,j) = 0;            
         elseif j > i % anti-symmetric matrix
             imageList = dir([baseDir '\' int2str(j) '\*.tif']); % obtain image list    
-            images2= int32.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
+            images2= uint16.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
             
             for k = 1:numOfImage 
                 images2(:,:,k) = imread([baseDir '\' int2str(j) '\' imageList(k).name]); % read all images in to the matrix
@@ -226,7 +226,7 @@ disp(['Resampling and writing took ' num2str(t_finalize) ' seconds overall...'])
 t_align_all = t_relativeshift_all + t_absoluteshift_all;
 t_all = t_period_all + t_align_all; 
 timerParallel(outputDir,t_period_all,t_align_all,t_all,t_period,t_relativeshift,t_relativeshift_all,t_absoluteshift_all);
-disp(['Total time used: ' num2str(toc(t0)-t0) ' seconds...'])
+disp(['Total time elapsed: ' num2str(toc(t0)) ' seconds...'])
 
 %% Record average period(t_p); potial period(t_p_candidate); registration result(t)
 dataRecorder(outputDir,t_p,t_p_candidate,t);
