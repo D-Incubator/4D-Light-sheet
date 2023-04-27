@@ -48,7 +48,7 @@ t_p_candidate = zeros(1,numOfSlice);
 
 % *can't use global variables in parfor loop
 parfor i = 1:numOfSlice
-   imageList = dir([baseDir '\' int2str(i) '\*.tif']); % obtain image list    
+    imageList = dir([baseDir '\' int2str(i) '\*.tif']); % obtain image list    
 
     images= int32.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
 
@@ -64,7 +64,8 @@ end
 t_p = sum(t_p_candidate)/length(t_p_candidate); % get the average estimated heartbeat period of all slices
 %disp(t_p); 
 t_period_all = t_period(numOfSlice); %timer
-disp(['Getting period took ' num2str(t_period_all) ' seconds overall...']);
+t_period_all2 = toc(t0) - t_start1;
+disp(['Getting period took ' num2str(t_period_all2) ' seconds overall...']);
 
 %% Get relative shift (with parallel computation)
 disp('Getting relative shift...')
@@ -225,6 +226,7 @@ disp(['Resampling and writing took ' num2str(t_finalize) ' seconds overall...'])
 t_align_all = t_relativeshift_all + t_absoluteshift_all;
 t_all = t_period_all + t_align_all; 
 timerParallel(outputDir,t_period_all,t_align_all,t_all,t_period,t_relativeshift,t_relativeshift_all,t_absoluteshift_all);
+disp(['Total time used: ' num2str(toc(t0)-t0) ' seconds...'])
 
 %% Record average period(t_p); potial period(t_p_candidate); registration result(t)
 dataRecorder(outputDir,t_p,t_p_candidate,t);
