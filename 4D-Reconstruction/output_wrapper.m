@@ -1,10 +1,4 @@
-function output_wrapper(outputDir, numOfSlice, numOfImage) 
-    byStateDir = [outputDir '\byState'];
-    if exist(byStateDir,'dir') == 7
-        rmdir(byStateDir, 's');
-    end
-    mkdir(byStateDir);   
-     
+function output_wrapper(outputDir, numOfSlice, numOfImage)  
     for i = 1:numOfImage      
         % combine image to one tiff and save
         combine_name = [byStateDir '\' 'state_' num2str(i,'%04d') '.tif'];                     

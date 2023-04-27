@@ -1,12 +1,7 @@
 function regulizeData_wrapper(baseDir, outputDir, T_p, t, h_T, numOfSlice, numOfPeriod, numOfImage)
 
-    if exist(outputDir,'dir') == 7     
-        disp('output folder exist, result will be overwritten, press any key to continue, ctrl+c to abort');
-        pause;
-        rmdir(outputDir, 's');
-    end
-    mkdir(outputDir);  
-
+    makeOutputDir(outputDir);
+    
     for i = 1:numOfSlice
         mkdir([outputDir '\bySlice\' int2str(i)]);
         imageList = dir([baseDir '\' int2str(i) '\*.tif']);

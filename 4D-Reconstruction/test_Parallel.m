@@ -172,12 +172,33 @@ disp("Got Absolute Shift using num seconds:");disp(t_absoluteshift_all);
 %% Final aligning and resample
 t_start4 = toc(t0);
 numOfImage = round(numOfPeriod * t_p/h_T);
-% regulize... can potentially be made faster by unrolling it and using a
-% parallel loop
-regulizeData_wrapper(baseDir, outputDir, t_p, t, h_T, numOfSlice, numOfPeriod, numOfImage); %resample data and save bySlice output
+
+% create the necessary directories
+makeOutputDirs(outputDir);    
+for i = 1:numOfSlice
+    mkdir([outputDir '\bySlice\' int2str(i)]);
+end
+
+% write output
+parfor i = 1:numOfSlice
+    imageList = dir([baseDir '\' int2str(i) '\*.tif']);
+    images= uint16.empty( imgHeight , imgWidth , 0 );       
+    count = 1;
+    % align all slice
+    for j = t(i)+1 : t(i)+1+floor(numOfPeriod*T_p/h_T)
+        images(:,:,count) = imread([baseDir '\' int2str(i) '\' imageList(j).name]);            
+        count = count + 1;
+    end       
+    % save resample data(temporarily)         
+    images_resampled = getResample(images, T_p , numOfPeriod , numOfImage, h_T );
+    for j = 1:numOfImage
+        imwrite(uint16(images_resampled(:,:,j)),[outputDir '\bySlice\' int2str(i) '\' int2str(j) '.tif']);
+    end         
+end
+
 t_finalize = toc(t0)-t_start4; %timer
 disp("Resampled using num seconds:");disp(t_finalize);
-output_wrapper(outputDir, numOfSlice, numOfImage); %save byStaet output as 3D tiff files
+output_wrapper(outputDir, numOfSlice, numOfImage); %save byState output as 3D tiff files
 rmdir(append(outputDir,'\bySlice'), 's') %*delete bySlice output
 
 %% Record used time
