@@ -179,15 +179,12 @@ disp('Resampling and writing output...')
 % create the necessary directories
 makeOutputDirs(outputDir);    
 byStateDir = [outputDir '\byState'];
-for i = 1:numOfSlice
-    mkdir([outputDir '\bySlice\' int2str(i)]);
-end
 
 t_start4 = toc(t0);
 numOfImage = round(numOfPeriod * t_p/h_T);
 
 % resample and write output by slice
-parfor i = 1:numOfSlice
+for i = 1:numOfSlice
     imageList = dir([baseDir '\' int2str(i) '\*.tif']);
     images= zeros( imgHeight , imgWidth , floor(numOfPeriod*t_p/h_T)+2 , 'uint16' );       
     count = 1;
@@ -199,26 +196,15 @@ parfor i = 1:numOfSlice
     % save resample data(temporarily)         
     images_resampled = getResample(images, t_p , numOfPeriod , numOfImage, h_T );
     for j = 1:numOfImage
-        imwrite(uint16(images_resampled(:,:,j)),[outputDir '\bySlice\' int2str(i) '\' int2str(j) '.tif']);
+        combine_name = [byStateDir '\' 'state_' num2str(j,'%04d') '.tif'];
+
+        if (i == 1)
+            imwrite(uint16(images_resampled(:,:,j)),combine_name);            
+        else   
+            imwrite(uint16(images_resampled(:,:,j)),combine_name, 'WriteMode', 'append');
+        end
     end         
 end
-
-% rewrite output by state
-parfor i = 1:numOfImage      
-    % combine image to one tiff and save
-    combine_name = [byStateDir '\' 'state_' num2str(i,'%04d') '.tif'];                     
-     % save reconstructed 3D images
-    for j = 1:numOfSlice
-        imagedata1 = imread([outputDir '\bySlice\' int2str(j) '\' int2str(i) '.tif']);
-        if (j == 1)
-            imwrite(imagedata1,combine_name);            
-        else   
-            imwrite(imagedata1,combine_name, 'WriteMode', 'append');
-        end
-    end          
-end
-rmdir(append(outputDir,'\bySlice'), 's') %*delete bySlice output
-
 t_finalize = toc(t0)-t_start4; %timer
 disp(['Resampling and writing took ' num2str(t_finalize) ' seconds overall...']);
 
