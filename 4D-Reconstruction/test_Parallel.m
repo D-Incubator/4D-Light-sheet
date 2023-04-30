@@ -212,13 +212,13 @@ for i = 1:numOfSlice
     end         
 end
 
-t_finalize = toc(t0)-t_start4; %timer
-disp(['Resampling and writing took ' num2str(t_finalize) ' seconds overall...']);
+t_resample = toc(t0)-t_start4; %timer
+disp(['Resampling and writing took ' num2str(t_resample) ' seconds overall...']);
 
 %% Record used time
 t_align_all = t_relativeshift_all + t_absoluteshift_all;
-t_all = t_period_all + t_align_all; 
-timerParallel(outputDir,t_period_all,t_align_all,t_all,t_period,t_relativeshift,t_relativeshift_all,t_absoluteshift_all);
+t_all = t_period_all + t_align_all + t_resample; 
+timerParallel(outputDir,t_period_all,t_align_all, t_resample,t_all,t_period,t_relativeshift,t_relativeshift_all,t_absoluteshift_all);
 disp(['Total time elapsed: ' num2str(toc(t0)) ' seconds...'])
 
 %% Record average period(t_p); potial period(t_p_candidate); registration result(t)

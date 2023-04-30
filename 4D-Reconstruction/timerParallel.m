@@ -1,7 +1,7 @@
-function timerParallel(outputDir,t_period_all,t_align_all,t_all,t_period,t_relativeshift,t_relativeshift_all,t_absoluteshift_all,t_finalize)
+function timerParallel(outputDir,t_period_all,t_align_all, t_resample, t_all,t_period,t_relativeshift,t_relativeshift_all,t_absoluteshift_all,t_finalize)
 
     filename = [outputDir '_timer' '.xlsx'];
-    T1 = table(t_period_all,t_align_all,t_all);
+    T1 = table(t_period_all,t_align_all, t_resample, t_all);
     T2 = table(t_period');
     T2.Properties.VariableNames = {'t_period'};
     T3 = table(t_relativeshift');
