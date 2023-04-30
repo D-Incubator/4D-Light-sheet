@@ -19,8 +19,10 @@ function [energy] = getPeriodMatchEnergy(T_p,images,h_T,numOfImages)
     timeInstances = timeInstances .* h_T; % convert the array to times
     timeInstances = mod(timeInstances, T_p); % phase lock w.r. to different candidate period
  
+    [height, width, ~] = size(images);
+
     energy = 0;
-    
+
     [timeInstances_sort, index] = sort(timeInstances , 'ascend'); % sort time instances into ascending order
 
     for i = 1:numOfImages-1
@@ -32,8 +34,8 @@ function [energy] = getPeriodMatchEnergy(T_p,images,h_T,numOfImages)
         timeDiff = timeDiff^2 / T_p^2; % Using T_p to normalize will kill the weight of timeDiff, as the number becomes
                                        % too small compare to image intancity difference, we can come back later to think about this
         
-        buffer = buffer + timeDiff;
-        energy = energy + sqrt(sum(sum(buffer))); % I implement this line exactly as paper, but I think sqrt() is not necessary
+        %buffer = buffer + timeDiff;
+        energy = energy + sqrt(sum(sum(buffer)) + height * width * timeDiff); % I implement this line exactly as paper, but I think sqrt() is not necessary
                                                   % We can come back later to compare the difference
     end
 
