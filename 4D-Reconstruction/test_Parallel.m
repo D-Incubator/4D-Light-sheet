@@ -86,6 +86,8 @@ parfor i = 1:numOfSlice-1
         images1(:,:,k) = imread([baseDir '\' int2str(i) '\' imageList(k).name]); % read all images in to the matrix
     end
 
+    images1 = gpuArray(images1);
+
     for j = 1:numOfSliceMinus1
         if( j < i || j > i+2)
             continue;
@@ -99,6 +101,8 @@ parfor i = 1:numOfSlice-1
             for k = 1:numOfImage 
                 images2(:,:,k) = imread([baseDir '\' int2str(j) '\' imageList(k).name]); % read all images in to the matrix
             end
+
+            images2 = gpuArray(images2)
             
             cost = inf;
             for s = -floor((startIndex-1)/2):floor(startIndex/2)   
@@ -133,6 +137,7 @@ for i = 1:numOfSlice-1
         end
     end
 end
+
 t_relativeshift(rserial) = toc(t0)-t_start2;
 t_relativeshift_all = t_relativeshift(rserial); %timer
 disp(['Getting relative shift took ' num2str(t_relativeshift_all) ' seconds overall...']);
@@ -192,7 +197,8 @@ for i = 1:numOfSlice
     for j = t(i)+1 : t(i)+1+floor(numOfPeriod*t_p/h_T)
         images(:,:,count) = imread([baseDir '\' int2str(i) '\' imageList(j).name]);            
         count = count + 1;
-    end       
+    end     
+
     % save resample data(temporarily)         
     images_resampled = getResample(images, t_p , numOfPeriod , numOfImage, h_T );
     for j = 1:numOfImage
@@ -205,6 +211,7 @@ for i = 1:numOfSlice
         end
     end         
 end
+
 t_finalize = toc(t0)-t_start4; %timer
 disp(['Resampling and writing took ' num2str(t_finalize) ' seconds overall...']);
 
