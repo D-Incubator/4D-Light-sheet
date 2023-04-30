@@ -63,7 +63,7 @@ parfor i = 1:numOfSlice
 end
 t_p = sum(t_p_candidate)/length(t_p_candidate); % get the average estimated heartbeat period of all slices
 %disp(t_p); 
-t_period_all = t_period(numOfSlice); %timer
+t_period_all = max(t_period); %timer
 t_period_all2 = toc(t0) - t_start1;
 disp(['Getting period took ' num2str(t_period_all2) ' seconds overall...']);
 
