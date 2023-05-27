@@ -80,7 +80,7 @@ startIndex = floor(t_p/h_T)+1;
 parfor i = 1:numOfSlice-1
     % first get images1, instead of getting it every time you get images2
     imageList = dir([baseDir '\' int2str(i) '\*.tif']); % obtain image list    
-    images1= uint16.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
+    images1= int16.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
         
     for k = 1:numOfImage 
         images1(:,:,k) = imread([baseDir '\' int2str(i) '\' imageList(k).name]); % read all images in to the matrix
@@ -96,7 +96,7 @@ parfor i = 1:numOfSlice-1
             Q(i,j) = 0;            
         elseif j > i % anti-symmetric matrix
             imageList = dir([baseDir '\' int2str(j) '\*.tif']); % obtain image list    
-            images2= uint16.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
+            images2= int16.empty( imgHeight , imgWidth , 0 ); % create matrix to store all images
             
             for k = 1:numOfImage 
                 images2(:,:,k) = imread([baseDir '\' int2str(j) '\' imageList(k).name]); % read all images in to the matrix
